@@ -11,13 +11,8 @@
 # purchased.
 
 
-from pocker import Pocker
+import pocker
 
 
 if __name__ == '__main__':
-    pocker = Pocker("amd64", "ubuntu", "trusty")
-    pocker.create()
-    pocker.start()
-    pocker.get_ip()
-    pocker.console()
-
+    pocker.pocker_create("benatto")
