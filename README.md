@@ -11,8 +11,6 @@ Just playing aroung with LXC and python.
 # License
 
 ```
-#!/usr/bin/python3
-
 # "THE BARBECUE-WARE LICENSE" (Revision 1):
 #
 #
