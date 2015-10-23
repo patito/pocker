@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # "THE BARBECUE-WARE LICENSE" (Revision 1):
 #
@@ -13,32 +13,39 @@
 
 import os
 import sys
-import time
-import uuid
 
 import lxc
 
 
 __all__ = ['pocker_create']
 
+MIN_REQUIRED_FREE_SPACE = 1
 
-POCKER_CONTAINER_PATH = os.environ.get('POCKER_CONTAINER_PATH', '/var/lib/lxc')
+POCKER_CONTAINER_PATH = os.environ.get('POCKER_CONTAINER_PATH',
+                                       '/var/lib/lxc/')
+
+DEFAULT_CONTAINER = {
+    "arch": "amd64",
+    "dist": "ubuntu",
+    "release": "trusty"
+}
 
 
 def superuser(f):
     """Decorator to test whether the user is root."""
-    
+
     def wrap(*args, **kwargs):
-       
         if not os.getuid() == 0:
             print("[ERROR]: This function requires root.")
-            sys.exit(403) 
+            sys.exit()
         else:
             f(*args, **kwargs)
+
     return wrap
 
 
 def container_exist(cname):
+    """Verify if the container exists."""
 
     if POCKER_CONTAINER_PATH[-1] != '/':
         path = POCKER_CONTAINER_PATH + '/' + cname
@@ -49,14 +56,18 @@ def container_exist(cname):
 
 
 def has_disk_space():
+    """Check free disk space. """
 
     st = os.statvfs('/')
-    gb = ((st.f_bsize * st.f_bavail)/(1024 * 1024 * 1024))
-    
-    return gb > 1
+    free_space = ((st.f_bsize * st.f_bavail)/(1024 * 1024 * 1024))
+
+    return free_space > MIN_REQUIRED_FREE_SPACE
+
 
 @superuser
-def pocker_create(cname):
+def pocker_create(cname, options=DEFAULT_CONTAINER):
+    """Creating a new container."""
+
     if not has_disk_space():
         print("[ERROR] No space left.")
         sys.exit(0)
@@ -65,18 +76,14 @@ def pocker_create(cname):
         print("[ERROR] Container exist, try to start it.")
         sys.exit(0)
 
-    print (" * Creating container: %s..." % (cname))
+    print ("[POCKER] Creating container: %s..." % (cname))
 
-    options = {
-       "dist": "ubuntu",
-       "release": "trusty",
-       "arch": "amd64"
-    }
     container = lxc.Container(cname)
     if container.create("download", 0, options):
         print ("[OK] Container %s created." % cname)
     else:
         print ("[ERRO] Container %s not created." % cname)
+
 
 @superuser
 def pocker_start():
