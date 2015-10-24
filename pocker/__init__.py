@@ -224,9 +224,14 @@ def pocker_stop(cname):
     return False
 
 
-
 def pocker_list():
-    pass
+    """List all conainters.
+    """
+
+    print ("%s   NAME \t STATUS %s" % (util.CYAN, util.NORMAL))
+    dirs = os.listdir(POCKER_CONTAINER_PATH)
+    for container in dirs:
+        print ("   %s \t %s" % (container, pocker_status(container)))
 
 
 if __name__ == "__main__":

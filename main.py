@@ -51,6 +51,10 @@ def main():
                          required=True)
     destroy.set_defaults(function=pocker.pocker_destroy)
 
+    # Command: pocker list <OPTIONS>
+    destroy = subparsers.add_parser('list', help='List all containers.')
+    destroy.set_defaults(function=pocker.pocker_list)
+
     args = parser.parse_args()
     if 'release' in args:
         options = {
@@ -59,8 +63,10 @@ def main():
             "release": args.release
         }
         args.function(args.name, options)
-    else:
+    elif 'name' in args:
         args.function(args.name)
+    else:
+        args.function()
 
 
 if __name__ == '__main__':
