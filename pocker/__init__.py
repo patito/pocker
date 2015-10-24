@@ -108,7 +108,7 @@ def _is_pocker_running(cname):
                (util.RED, util.NORMAL))
         return False
 
-    if pocker_status(cname) == "RUNNING":
+    if pocker_status(cname) != "RUNNING":
         return False
 
     return True
@@ -163,13 +163,66 @@ def pocker_destroy(cname):
 
 
 @superuser
-def pocker_start():
-    pass
+def pocker_start(cname):
+    """Start the conainter.
+
+    Args:
+      cname (str): Container name.
+
+    Returns:
+        bool: True if successful, False otherwise.
+
+    """
+
+    if not has_container(cname):
+        print("%s[ERRO]%s Container does not exist." % (util.RED, util.NORMAL))
+        return False
+
+    if  _is_pocker_running(cname):
+        print("%s[ERRO]%s Pocker is RUNNING." %
+               (util.RED, util.NORMAL))
+        return False
+
+    cont = lxc.Container(cname)
+    if cont.start():
+        print("%s[OK]%s Container started." % (util.GREEN, util.NORMAL))
+        return True
+ 
+    print ("%s[ERROR]%s Container not started." % (util.RED, util.NORMAL))
+
+    return False
 
 
 @superuser
-def pocker_stop():
-    pass
+def pocker_stop(cname):
+    """Stop the conainter.
+
+    Args:
+      cname (str): Container name.
+
+    Returns:
+        bool: True if successful, False otherwise.
+
+    """
+
+    if not has_container(cname):
+        print("%s[ERRO]%s Container does not exist." % (util.RED, util.NORMAL))
+        return False
+
+    if  not _is_pocker_running(cname):
+        print("%s[ERRO]%s Pocker is not RUNNING." %
+               (util.RED, util.NORMAL))
+        return False
+
+    cont = lxc.Container(cname)
+    if cont.stop():
+        print("%s[OK]%s Container stopped." % (util.GREEN, util.NORMAL))
+        return True
+ 
+    print ("%s[ERROR]%s Container not stopped." % (util.RED, util.NORMAL))
+
+    return False
+
 
 
 def pocker_list():

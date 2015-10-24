@@ -37,11 +37,13 @@ def main():
     start = subparsers.add_parser('start', help='Start a container.')
     start.add_argument('-n', '--name', type=str, help='Container name',
                        required=True)
+    start.set_defaults(function=pocker.pocker_start)
 
     # Command: pocker stop <OPTIONS>
     stop = subparsers.add_parser('stop', help='Stop a container.')
     stop.add_argument('-n', '--name', type=str, help='Container name',
                       required=True)
+    stop.set_defaults(function=pocker.pocker_stop)
 
     # Command: pocker destroy <OPTIONS>
     destroy = subparsers.add_parser('destroy', help='Destroy a container.')
