@@ -21,13 +21,22 @@ import pocker
 
 class TestStringMethods(unittest.TestCase):
 
+
+    def setUp(self):
+        #self.cname = str(uuid.uuid1())
+        self.cname = "test"
+
     def test_upper(self):
         pass
+        # self.cname = str(uuid.uuid1())
 
     def test_create(self):
-        cname = str(uuid.uuid1())
-        pocker.pocker_create(cname, pocker.DEFAULT_CONTAINER)
-        self.assertTrue(pocker.container_exist(cname))
+        pocker.pocker_create(self.cname, pocker.DEFAULT_CONTAINER)
+        self.assertTrue(pocker.has_container(self.cname))
+
+    def test_destroy(self):
+        pocker.pocker_destroy(self.cname)
+        self.assertFalse(pocker.has_container(self.cname))
 
 
 if __name__ == '__main__':

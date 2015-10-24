@@ -44,7 +44,7 @@ def superuser(f):
     return wrap
 
 
-def container_exist(cname):
+def has_container(cname):
     """Verify if the container exists."""
 
     if POCKER_CONTAINER_PATH[-1] != '/':
@@ -55,24 +55,33 @@ def container_exist(cname):
     return os.path.isdir(path)
 
 
-def has_disk_space():
+def _has_freespace():
     """Check free disk space. """
 
     st = os.statvfs('/')
-    free_space = ((st.f_bsize * st.f_bavail)/(1024 * 1024 * 1024))
+    freespace = ((st.f_bsize * st.f_bavail)/(1024 * 1024 * 1024))
 
-    return free_space > MIN_REQUIRED_FREE_SPACE
+    return freespace > MIN_REQUIRED_FREE_SPACE
 
 
 @superuser
 def pocker_create(cname, options=DEFAULT_CONTAINER):
-    """Creating a new container."""
+    """Creating a new container.
 
-    if not has_disk_space():
+    Args:
+      cname (str): Container name.
+      options (dict of str: str): Container options.
+
+    Returns:
+        bool: True if successful, False otherwise.
+
+    """
+
+    if not _has_freespace():
         print("[ERROR] No space left.")
         sys.exit(0)
 
-    if container_exist(cname):
+    if has_container(cname):
         print("[ERROR] Container exist, try to start it.")
         sys.exit(0)
 
@@ -83,6 +92,62 @@ def pocker_create(cname, options=DEFAULT_CONTAINER):
         print ("[OK] Container %s created." % cname)
     else:
         print ("[ERRO] Container %s not created." % cname)
+
+
+def _is_pocker_running(cname):
+
+    if not has_container(cname):
+        print("[ERROR] Container does not exist.")
+        return False
+
+    if pocker_status(cname) == "RUNNING":
+        return False
+
+    return True
+
+
+def pocker_status(cname):
+    """ Container Status.
+
+    Args:
+      cname (str): Container name.
+
+    Return:
+      str: Container status.
+
+   """
+
+    if not has_container(cname):
+        print("[ERROR] Container does not exist.")
+        return False
+
+    return lxc.Container(cname).state
+
+
+@superuser
+def pocker_destroy(cname):
+    """ Destroy the conainter.
+
+    Args:
+      cname (str): Container name.
+
+    Returns:
+        bool: True if successful, False otherwise.
+
+    """
+
+    if not has_container(cname):
+        print("[ERROR] Container does not exist.")
+        return False
+
+    if not _is_pocker_running(cname):
+        print("[ERROR] Pocker is RUNNING, stop it first.")
+        return False
+
+    if lxc.Container(cname).destroy():
+        print("[OK] Booooowwwwwww!!!")
+    else:
+        print("[ERROR] Container is indestructible")
 
 
 @superuser

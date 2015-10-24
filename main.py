@@ -24,32 +24,33 @@ def main():
     # Command: pocker create <OPTIONS>
     create = subparsers.add_parser('create', help='Create new container.')
     create.add_argument('-n', '--name', type=str, help='Container name',
-        required=True)
+                        required=True)
     create.add_argument('-d', '--dist', type=str, help='Distribution',
-        required=True)
+                        required=True)
     create.add_argument('-r', '--release', type=str, help='Release',
-        required=True)
+                        required=True)
     create.add_argument('-a', '--arch', type=str, help='Release',
-        required=True)
+                        required=True)
     create.set_defaults(function=pocker.pocker_create)
 
     # Command: pocker start <OPTIONS>
     start = subparsers.add_parser('start', help='Start a container.')
     start.add_argument('-n', '--name', type=str, help='Container name',
-        required=True)
+                       required=True)
 
     # Command: pocker stop <OPTIONS>
     stop = subparsers.add_parser('stop', help='Stop a container.')
     stop.add_argument('-n', '--name', type=str, help='Container name',
-        required=True)
+                      required=True)
 
     # Command: pocker destroy <OPTIONS>
     destroy = subparsers.add_parser('destroy', help='Destroy a container.')
     destroy.add_argument('-n', '--name', type=str, help='Container name',
-        required=True)
+                         required=True)
+    destroy.set_defaults(function=pocker.pocker_destroy)
 
     args = parser.parse_args()
-    if args.release:
+    if 'release' in args:
         options = {
             "arch": args.arch,
             "dist": args.dist,
