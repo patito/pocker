@@ -16,6 +16,8 @@ import sys
 
 import lxc
 
+from . import util
+
 
 __all__ = ['pocker_create']
 
@@ -36,7 +38,8 @@ def superuser(f):
 
     def wrap(*args, **kwargs):
         if not os.getuid() == 0:
-            print("[ERROR]: This function requires root.")
+            print("%s[ERROR]%s This function requires root." %
+                  (util.RED, util.NORMAL))
             sys.exit()
         else:
             f(*args, **kwargs)
@@ -78,26 +81,31 @@ def pocker_create(cname, options=DEFAULT_CONTAINER):
     """
 
     if not _has_freespace():
-        print("[ERROR] No space left.")
-        sys.exit(0)
+        print("%s[ERROR]%s No space left." % (util.RED, util.NORMAL))
+        return False
 
     if has_container(cname):
-        print("[ERROR] Container exist, try to start it.")
-        sys.exit(0)
+        print("%s[ERROR]%s Container exist, try to start it." %
+              (util.RED, util.NORMAL))
+        return False
 
-    print ("[POCKER] Creating container: %s..." % (cname))
+    print ("%s[OK]%s Creating container: %s..." %
+           (util.GREEN, util.NORMAL, cname))
 
     container = lxc.Container(cname)
     if container.create("download", 0, options):
-        print ("[OK] Container %s created." % cname)
+        print ("%s[OK]%s Container %s created." %
+               (util.GREEN, util.NORMAL, cname))
     else:
-        print ("[ERRO] Container %s not created." % cname)
+        print ("%s[ERRO]%s Container %s not created." %
+               (util.RED, util.NORMAL, cname))
 
 
 def _is_pocker_running(cname):
 
     if not has_container(cname):
-        print("[ERROR] Container does not exist.")
+        print ("%s[ERRO]%s Container does not exist." %
+               (util.RED, util.NORMAL))
         return False
 
     if pocker_status(cname) == "RUNNING":
@@ -118,7 +126,8 @@ def pocker_status(cname):
    """
 
     if not has_container(cname):
-        print("[ERROR] Container does not exist.")
+        print ("%s[ERRO]%s Container does not exist." %
+               (util.RED, util.NORMAL))
         return False
 
     return lxc.Container(cname).state
@@ -137,17 +146,20 @@ def pocker_destroy(cname):
     """
 
     if not has_container(cname):
-        print("[ERROR] Container does not exist.")
+        print ("%s[ERRO]%s Container does not exist." %
+               (util.RED, util.NORMAL))
         return False
 
     if not _is_pocker_running(cname):
-        print("[ERROR] Pocker is RUNNING, stop it first.")
+        print ("%s[ERRO]%s Pocker is RUNNING, stop it first." %
+               (util.RED, util.NORMAL))
         return False
 
     if lxc.Container(cname).destroy():
-        print("[OK] Booooowwwwwww!!!")
+        print ("%s[OK]%s Booowwwwww!!!." % (util.GREEN, util.NORMAL))
     else:
-        print("[ERROR] Container is indestructible")
+        print ("%s[ERRO]%s Container is indestructible." %
+               (util.RED, util.NORMAL))
 
 
 @superuser
