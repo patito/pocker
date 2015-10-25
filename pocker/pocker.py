@@ -48,15 +48,20 @@ def superuser(f):
     return wrap
 
 
-def has_container(cname):
-    """Verify if the container exists."""
+def _fix_path(cname):
 
     if POCKER_CONTAINER_PATH[-1] != '/':
         path = POCKER_CONTAINER_PATH + '/' + cname
     else:
         path = POCKER_CONTAINER_PATH + cname
 
-    return os.path.isdir(path)
+    return path
+
+
+def has_container(cname):
+    """Verify if the container exists."""
+
+    return os.path.isdir(_fix_path(cname))
 
 
 def _has_freespace():
