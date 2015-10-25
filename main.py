@@ -10,15 +10,22 @@
 # The quality of the barbecue depends on the amount of beer that has been
 # purchased.
 
+import sys
 
 import argparse
 
-import pocker
+#import pocker
 
+from pocker.pocker import *
 
 def main():
+
+    if len(sys.argv) == 1:
+        print("Usage: python %s --help" % sys.argv[0])
+        sys.exit(0)
+    
     parser = argparse.ArgumentParser(
-        description='Messing arount with LXC and Python.')
+        description='Messing around with LXC and Python.')
     subparsers = parser.add_subparsers(help='commands')
 
     # Command: pocker create <OPTIONS>
@@ -31,29 +38,36 @@ def main():
                         required=True)
     create.add_argument('-a', '--arch', type=str, help='Release',
                         required=True)
-    create.set_defaults(function=pocker.pocker_create)
+    create.set_defaults(function=pocker_create)
 
     # Command: pocker start <OPTIONS>
     start = subparsers.add_parser('start', help='Start a container.')
     start.add_argument('-n', '--name', type=str, help='Container name',
                        required=True)
-    start.set_defaults(function=pocker.pocker_start)
+    start.set_defaults(function=pocker_start)
 
     # Command: pocker stop <OPTIONS>
     stop = subparsers.add_parser('stop', help='Stop a container.')
     stop.add_argument('-n', '--name', type=str, help='Container name',
                       required=True)
-    stop.set_defaults(function=pocker.pocker_stop)
+    stop.set_defaults(function=pocker_stop)
 
     # Command: pocker destroy <OPTIONS>
     destroy = subparsers.add_parser('destroy', help='Destroy a container.')
     destroy.add_argument('-n', '--name', type=str, help='Container name',
                          required=True)
-    destroy.set_defaults(function=pocker.pocker_destroy)
+    destroy.set_defaults(function=pocker_destroy)
 
     # Command: pocker list <OPTIONS>
     destroy = subparsers.add_parser('list', help='List all containers.')
-    destroy.set_defaults(function=pocker.pocker_list)
+    destroy.set_defaults(function=pocker_list)
+
+    # Command: pocker console <OPTIONS>
+    console = subparsers.add_parser('console', help='Open a console to container.')
+    console.add_argument('-n', '--name', type=str, help='Container name',
+                         required=True)
+    console.set_defaults(function=pocker_console)
+
 
     args = parser.parse_args()
     if 'release' in args:
