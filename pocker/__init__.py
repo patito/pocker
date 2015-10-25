@@ -150,7 +150,7 @@ def pocker_destroy(cname):
                (util.RED, util.NORMAL))
         return False
 
-    if not _is_pocker_running(cname):
+    if _is_pocker_running(cname):
         print ("%s[ERRO]%s Pocker is RUNNING, stop it first." %
                (util.RED, util.NORMAL))
         return False
