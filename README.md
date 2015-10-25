@@ -1,14 +1,37 @@
 # Pocker
 
-Just playing aroung with LXC and python.
+Messing around with LXC and python3. 
 
-# Requeriments
+## Usage
+
+```
+# python3 main.py --help
+```
+
+```
+# python3 main.py create --name titaum --dist ubuntu --release trusty --arch amd64 
+```
+
+```
+# python3 main.py start --name titaum
+```
+
+```
+# python3 main.py list
+```
+
+```
+# python3 main.py console --name titaum
+```
+
+## Requeriments
 
  * python3
  * python3-lxc
  * lxc
 
-# License
+
+## License
 
 ```
 # "THE BARBECUE-WARE LICENSE" (Revision 1):
@@ -38,10 +61,10 @@ Just playing aroung with LXC and python.
 #     \ _,' o . '-..-' o /||`    `||
 #      `'-.__  o'  __.-'` || _/\_ ||
 #            `'..'`       ||`    `||
-#              ||         || Vida!||
+#              ||         || Vida ||
 #              ||         || Loka ||
 #              ||         | \____/ |
-#           _.'  '._      |        |
+#       jgs _.'  '._      |        |
 #          <        >     \_.-""-._/
 #           `""""""`       `""""""`
 ```
