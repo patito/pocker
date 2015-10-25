@@ -12,11 +12,10 @@
 
 
 import os
-import sys
 
 import lxc
 
-from . import util
+from . import utils
 
 
 __all__ = ['pocker_create', 'pocker_start', 'pocker_list', 'pocker_stop',
@@ -32,20 +31,6 @@ DEFAULT_CONTAINER = {
     "dist": "ubuntu",
     "release": "trusty"
 }
-
-
-def superuser(f):
-    """Decorator to test whether the user is root."""
-
-    def wrap(*args, **kwargs):
-        if not os.getuid() == 0:
-            print("%s[ERROR]%s This function requires root." %
-                  (util.RED, util.NORMAL))
-            sys.exit()
-        else:
-            f(*args, **kwargs)
-
-    return wrap
 
 
 def _fix_path(cname):
@@ -73,7 +58,7 @@ def _has_freespace():
     return freespace > MIN_REQUIRED_FREE_SPACE
 
 
-@superuser
+@utils.superuser
 def pocker_create(cname, options=DEFAULT_CONTAINER):
     """Creating a new container.
 
@@ -87,32 +72,32 @@ def pocker_create(cname, options=DEFAULT_CONTAINER):
     """
 
     if not _has_freespace():
-        print("%s[ERROR]%s No space left." % (util.RED, util.NORMAL))
+        print("%s[ERROR]%s No space left." % (utils.RED, utils.NORMAL))
         return False
 
     if has_container(cname):
         print("%s[ERROR]%s Container exist, try to start it." %
-              (util.RED, util.NORMAL))
+              (utils.RED, utils.NORMAL))
         return False
 
     print ("%s[OK]%s Creating container: %s..." %
-           (util.GREEN, util.NORMAL, cname))
+           (utils.GREEN, utils.NORMAL, cname))
 
     container = lxc.Container(cname)
     #if container.create("download", 0, options):
     if container.create("ubuntu"):
         print ("%s[OK]%s Container %s created." %
-               (util.GREEN, util.NORMAL, cname))
+               (utils.GREEN, utils.NORMAL, cname))
     else:
         print ("%s[ERRO]%s Container %s not created." %
-               (util.RED, util.NORMAL, cname))
+               (utils.RED, utils.NORMAL, cname))
 
 
 def _is_pocker_running(cname):
 
     if not has_container(cname):
         print ("%s[ERRO]%s Container does not exist." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     if pocker_status(cname) != "RUNNING":
@@ -134,13 +119,13 @@ def pocker_status(cname):
 
     if not has_container(cname):
         print ("%s[ERRO]%s Container does not exist." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     return lxc.Container(cname).state
 
 
-@superuser
+@utils.superuser
 def pocker_destroy(cname):
     """ Destroy the conainter.
 
@@ -154,22 +139,22 @@ def pocker_destroy(cname):
 
     if not has_container(cname):
         print ("%s[ERRO]%s Container does not exist." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     if _is_pocker_running(cname):
         print ("%s[ERRO]%s Pocker is RUNNING, stop it first." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     if lxc.Container(cname).destroy():
-        print ("%s[OK]%s Booowwwwww!!!." % (util.GREEN, util.NORMAL))
+        print ("%s[OK]%s Booowwwwww!!!." % (utils.GREEN, utils.NORMAL))
     else:
         print ("%s[ERRO]%s Container is indestructible." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
 
 
-@superuser
+@utils.superuser
 def pocker_start(cname):
     """Start the conainter.
 
@@ -182,25 +167,25 @@ def pocker_start(cname):
     """
 
     if not has_container(cname):
-        print("%s[ERRO]%s Container does not exist." % (util.RED, util.NORMAL))
+        print("%s[ERRO]%s Container does not exist." % (utils.RED, utils.NORMAL))
         return False
 
     if  _is_pocker_running(cname):
         print("%s[ERRO]%s Pocker is RUNNING." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     cont = lxc.Container(cname)
     if cont.start():
-        print("%s[OK]%s Container started." % (util.GREEN, util.NORMAL))
+        print("%s[OK]%s Container started." % (utils.GREEN, utils.NORMAL))
         return True
  
-    print ("%s[ERROR]%s Container not started." % (util.RED, util.NORMAL))
+    print ("%s[ERROR]%s Container not started." % (utils.RED, utils.NORMAL))
 
     return False
 
 
-@superuser
+@utils.superuser
 def pocker_stop(cname):
     """Stop the conainter.
 
@@ -213,20 +198,20 @@ def pocker_stop(cname):
     """
 
     if not has_container(cname):
-        print("%s[ERRO]%s Container does not exist." % (util.RED, util.NORMAL))
+        print("%s[ERRO]%s Container does not exist." % (utils.RED, utils.NORMAL))
         return False
 
     if  not _is_pocker_running(cname):
         print("%s[ERRO]%s Pocker is not RUNNING." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     cont = lxc.Container(cname)
     if cont.stop():
-        print("%s[OK]%s Container stopped." % (util.GREEN, util.NORMAL))
+        print("%s[OK]%s Container stopped." % (utils.GREEN, utils.NORMAL))
         return True
  
-    print ("%s[ERROR]%s Container not stopped." % (util.RED, util.NORMAL))
+    print ("%s[ERROR]%s Container not stopped." % (utils.RED, utils.NORMAL))
 
     return False
 
@@ -235,7 +220,7 @@ def pocker_list():
     """List all conainters.
     """
 
-    print ("%s   NAME \t STATUS %s" % (util.CYAN, util.NORMAL))
+    print ("%s   NAME \t STATUS %s" % (utils.CYAN, utils.NORMAL))
     dirs = os.listdir(POCKER_CONTAINER_PATH)
     for container in dirs:
         print ("   %s \t %s" % (container, pocker_status(container)))
@@ -253,20 +238,20 @@ def pocker_console(cname):
     """
 
     if not has_container(cname):
-        print("%s[ERRO]%s Container does not exist." % (util.RED, util.NORMAL))
+        print("%s[ERRO]%s Container does not exist." % (utils.RED, utils.NORMAL))
         return False
 
     if  not _is_pocker_running(cname):
         print("%s[ERRO]%s Pocker is not RUNNING." %
-               (util.RED, util.NORMAL))
+               (utils.RED, utils.NORMAL))
         return False
 
     cont = lxc.Container(cname)
     if cont.console():
-        print("%s[OK]%s Container console." % (util.GREEN, util.NORMAL))
+        print("%s[OK]%s Container console." % (utils.GREEN, utils.NORMAL))
         return True
  
-    print ("%s[ERROR]%s Error openning a console." % (util.RED, util.NORMAL))
+    print ("%s[ERROR]%s Error openning a console." % (utils.RED, utils.NORMAL))
 
     return False
 

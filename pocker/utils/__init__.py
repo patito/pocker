@@ -11,5 +11,5 @@
 # purchased.
 
 
-__version__ = "0.1"
-__title__ = "pocker"
+from .decorators import superuser
+from .colors import *
